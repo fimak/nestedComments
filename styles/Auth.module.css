@@ -1,0 +1,8 @@
+.content {
+    padding: 8px 32px;
+}
+.textContainer {
+    display: flex;
+    justify-content: center;
+    margin: 16px;
+}

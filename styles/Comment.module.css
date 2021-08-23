@@ -1,0 +1,22 @@
+.comment {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid black;
+  padding: 10px;
+  margin: 5px 10px;
+}
+
+.commentBody {
+  display: flex;
+  width: 100%;
+}
+
+.author {
+  color: grey;
+  font-size: 12px;
+}
+
+.btnReply {
+  margin-left: 10px;
+}

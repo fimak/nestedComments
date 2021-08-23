@@ -1,9 +1,43 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from 'next';
+import { useEffect, useState } from 'react';
+import firebase from '../components/firebase/clientApp';
+import {
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR,
+} from 'next-firebase-auth';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import Head from 'next/head';
+import Image from 'next/image';
+import Header from '../components/Header';
+import Comments, { IComments } from '../components/Comments';
+import styles from '../styles/Home.module.css';
+
+const fakeComments = [
+  { author: 'Eduard', comment: 300, date: new Date(), comments: [{ author: 'Tractorist', comment: 777, date: new Date()}]},
+  { author: 'Petr', comment: 9999999999, date: new Date()},
+];
 
 const Home: NextPage = () => {
+  const AuthUser = useAuthUser();
+  const [comments, setComments] = useState(undefined);
+  const [commentsCollection, commentsLoading, commentsError] = useCollection(
+    firebase.firestore().collection('comments'),
+    {}
+  );
+
+  if (!commentsLoading && commentsCollection) {
+    commentsCollection.docs.map((doc) => console.log(doc.data()));
+  }
+
+  useEffect(() => {
+    if (!commentsLoading && commentsCollection) {
+      const comments = [];
+      commentsCollection.docs.map((doc) => comments.push(doc.data()));
+      setComments(comments);
+    }
+  }, [commentsLoading, commentsCollection]);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,45 +46,15 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <Header email={AuthUser.email} signOut={AuthUser.signOut} />
+
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to <a href="https://www.upwork.com/freelancers/aleksandrufimtsev">Tweet-tulator</a>
         </h1>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <Comments comments={comments} userEmail={AuthUser.email}/>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
       </main>
 
       <footer className={styles.footer}>
@@ -69,4 +73,6 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export const getServerSideProps = withAuthUserTokenSSR()()
+
+export default withAuthUser()(Home)
