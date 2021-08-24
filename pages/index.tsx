@@ -13,11 +13,6 @@ import Header from '../components/Header';
 import Comments, { IComments } from '../components/Comments';
 import styles from '../styles/Home.module.css';
 
-const fakeComments = [
-  { author: 'Eduard', comment: 300, date: new Date(), comments: [{ author: 'Tractorist', comment: 777, date: new Date()}]},
-  { author: 'Petr', comment: 9999999999, date: new Date()},
-];
-
 const Home: NextPage = () => {
   const AuthUser = useAuthUser();
   const [comments, setComments] = useState(undefined);
@@ -74,5 +69,4 @@ const Home: NextPage = () => {
 }
 
 export const getServerSideProps = withAuthUserTokenSSR()()
-
 export default withAuthUser()(Home)

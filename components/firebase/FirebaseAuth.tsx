@@ -1,16 +1,9 @@
-/* globals window */
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
-import firebase from 'firebase/app'
-import 'firebase/auth'
+import firebase from '../firebase/clientApp';
 
-// Note that next-firebase-auth inits Firebase for us,
-// so we don't need to.
-
-const firebaseAuthConfig = {
+const uiConfig = {
   signInFlow: 'popup',
-  // Auth providers
-  // https://github.com/firebase/firebaseui-web#configure-oauth-providers
   signInOptions: [
     {
       provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
@@ -21,34 +14,14 @@ const firebaseAuthConfig = {
     }
   ],
   signInSuccessUrl: '/',
-  credentialHelper: 'none',
-  callbacks: {
-    // https://github.com/firebase/firebaseui-web#signinsuccesswithauthresultauthresult-redirecturl
-    signInSuccessWithAuthResult: () =>
-      // Don't automatically redirect. We handle redirects using
-      // `next-firebase-auth`.
-      false,
-  },
-}
+};
 
 const FirebaseAuth = () => {
-  // Do not SSR FirebaseUI, because it is not supported.
-  // https://github.com/firebase/firebaseui-web/issues/213
-  const [renderAuth, setRenderAuth] = useState(false)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setRenderAuth(true)
-    }
-  }, [])
   return (
-    <div>
-      {renderAuth ? (
-        <StyledFirebaseAuth
-          uiConfig={firebaseAuthConfig}
-          firebaseAuth={firebase.auth()}
-        />
-      ) : null}
-    </div>
+    <StyledFirebaseAuth
+      uiConfig={uiConfig}
+      firebaseAuth={firebase.auth()}
+    />
   )
 }
 
