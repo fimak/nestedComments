@@ -5,12 +5,13 @@ import ReplyForm from './ReplyForm';
 import styles from '../styles/Comment.module.css';
 
 interface CommentProps {
+  path: string;
   comment: iComment;
   userEmail?: string | null;
 }
 
-const Comment: FC<CommentProps> = ({ comment, userEmail }) => {
-
+const Comment: FC<CommentProps> = ({ path, comment, userEmail }) => {
+  const newPath = (slug: string | number):string => path ? `${path}/${slug}` : `${slug}`;
   return (
     <div className={styles.comment}>
       <div className={styles.commentBody}>
@@ -19,9 +20,9 @@ const Comment: FC<CommentProps> = ({ comment, userEmail }) => {
           <span>{comment.comment}</span>
         </div>
       </div>
-      {userEmail && <ReplyForm />}
+      {userEmail && <ReplyForm author={userEmail} path={path} parent={comment}/>}
       {comment.comments && (
-        <Comments comments={comment.comments} userEmail={userEmail} />
+        <Comments comments={comment.comments} userEmail={userEmail} path={newPath(comment.key)} />
       )}
     </div>
   )

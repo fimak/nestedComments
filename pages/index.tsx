@@ -16,7 +16,8 @@ import styles from '../styles/Home.module.css';
 
 const Home: NextPage = () => {
   const AuthUser = useAuthUser();
-  const [comments, setComments] = useState(undefined);
+  const db = firebase.firestore();
+  const [comments, setComments] = useState<IComments | undefined>(undefined);
   const [commentsCollection, commentsLoading, commentsError] = useCollection(
     firebase.firestore().collection('comments').orderBy('date'),
     {}
@@ -24,8 +25,8 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!commentsLoading && commentsCollection) {
-      const comments = [];
-      commentsCollection.docs.map((doc) => comments.push(doc.data()));
+      const comments = commentsCollection.docs.map((doc) => ({ key: doc.id, ...doc.data()}));
+      console.log(comments);
       setComments(comments);
     }
   }, [commentsLoading, commentsCollection]);
