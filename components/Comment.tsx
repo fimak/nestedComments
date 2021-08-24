@@ -22,7 +22,7 @@ const Comment: FC<CommentProps> = ({ path, comment, userEmail }) => {
       </div>
       {userEmail && <ReplyForm author={userEmail} path={path} parent={comment}/>}
       {comment.comments && (
-        <Comments comments={comment.comments} userEmail={userEmail} path={newPath(comment.key)} />
+        <Comments comments={comment.comments} userEmail={userEmail} path={path} />
       )}
     </div>
   )

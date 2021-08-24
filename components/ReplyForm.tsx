@@ -1,11 +1,12 @@
 import React, {FC, useState} from 'react';
+import set from 'lodash/set';
 import {Comment} from './Comments';
 import firebase from './firebase/clientApp';
 import styles from '../styles/ReplyForm.module.css';
 
 interface ReplyFormProps {
-  path: string;
   author: string;
+  path?: string;
   parent?: Comment;
   isPost?: boolean;
 }
@@ -23,8 +24,25 @@ const ReplyForm: FC<ReplyFormProps> = ({path, author, parent, isPost}) => {
   console.log(path);
 
   const reply = async () => {
-    const newValue = (option: string) => {
-      if (parent) {
+    if (!path) return false;
+
+    const pathArray = path.split('/');
+    let document:any;
+    await db.collection('comments').doc(pathArray[0]).get()
+      .then((doc) => {
+        if (doc.exists) {
+          document = doc.data();
+        }
+      });
+
+    const newPathArray = pathArray.reduce((r, a) => r.concat(a , 'comments'), ['comments']);
+    newPathArray.shift();
+    newPathArray.shift();
+
+    console.log('document: ', document);
+
+    if (parent) {
+      const newValue = (option: string) => {
         switch (option) {
           case '+':
             return parent.comment + value;
@@ -35,9 +53,28 @@ const ReplyForm: FC<ReplyFormProps> = ({path, author, parent, isPost}) => {
           case '/':
             return parent.comment / value;
         }
+        return 0;
+      };
+
+      if (!parent.comments) {
+        parent.comments = [];
+      }
+
+      parent.comments.push({
+        key: parent.comments.length,
+        author,
+        comment: newValue(option),
+        date: new Date()
+      });
+
+      if (newPathArray.length > 1) {
+        if (newPathArray.length > 1) { newPathArray.pop(); }
+        const newDocument = set(document, newPathArray, parent);
+        await db.collection('comments').doc(pathArray[0]).update({ ...newDocument });
+      } else {
+        await db.collection('comments').doc(pathArray[0]).update({ comments: parent.comments });
       }
     }
-    await db.collection('comments').doc(path).update({comments: [{author, comment: newValue(option), date: new Date()}]});
   };
 
   return (

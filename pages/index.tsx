@@ -25,7 +25,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!commentsLoading && commentsCollection) {
-      const comments = commentsCollection.docs.map((doc) => ({ key: doc.id, ...doc.data()}));
+      const comments = commentsCollection.docs.map((doc) => ({ key: doc.id, ...doc.data() }));
       console.log(comments);
       setComments(comments);
     }

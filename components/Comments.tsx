@@ -3,7 +3,7 @@ import styles from '../styles/Comments.module.css'
 import Comment from './Comment';
 
 export interface Comment {
-  key: string | number;
+  key: number;
   author: string;
   comment: number;
   date: Date;
