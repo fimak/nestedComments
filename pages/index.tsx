@@ -11,19 +11,16 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Header from '../components/Header';
 import Comments, { IComments } from '../components/Comments';
+import ReplyForm from '../components/ReplyForm';
 import styles from '../styles/Home.module.css';
 
 const Home: NextPage = () => {
   const AuthUser = useAuthUser();
   const [comments, setComments] = useState(undefined);
   const [commentsCollection, commentsLoading, commentsError] = useCollection(
-    firebase.firestore().collection('comments'),
+    firebase.firestore().collection('comments').orderBy('date'),
     {}
   );
-
-  if (!commentsLoading && commentsCollection) {
-    commentsCollection.docs.map((doc) => console.log(doc.data()));
-  }
 
   useEffect(() => {
     if (!commentsLoading && commentsCollection) {
@@ -47,6 +44,8 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="https://www.upwork.com/freelancers/aleksandrufimtsev">Tweet-tulator</a>
         </h1>
+
+        {AuthUser.email && <ReplyForm isPost author={AuthUser.email} />}
 
         <Comments comments={comments} userEmail={AuthUser.email}/>
 

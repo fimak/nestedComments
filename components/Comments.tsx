@@ -1,4 +1,3 @@
-import firebase from 'firebase';
 import React, { FC } from 'react';
 import styles from '../styles/Comments.module.css'
 import Comment from './Comment';
