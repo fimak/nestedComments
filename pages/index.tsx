@@ -26,7 +26,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (!commentsLoading && commentsCollection) {
       const comments = commentsCollection.docs.map((doc) => ({ key: doc.id, ...doc.data() }));
-      console.log(comments);
+      // @ts-ignore
       setComments(comments);
     }
   }, [commentsLoading, commentsCollection]);
